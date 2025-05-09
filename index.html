@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treasure Hunt: Collect and Buy Edition</title>
+    <title>Treasure Hunt: Adventure Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>🔍 Treasure Hunt: Collect and Buy Edition</h1>
-        <p>Explore, discover treasures, and buy items with your earnings!</p>
+        <h1>🏝️ Treasure Hunt: Adventure Edition</h1>
+        <p>Explore, collect treasures, buy items, and survive thrilling locations!</p>
     </header>
 
     <section id="game-area">
-        <!-- Explore Button to start the treasure hunt -->
         <button id="explore-btn">Explore</button>
         <p id="status">Status: Ready to explore!</p>
         <div id="treasure-info"></div>
@@ -22,16 +21,18 @@
 
     <section id="currency">
         <h2>Your Coins: <span id="coin-balance">0</span></h2>
-        <!-- Add a button to open the shop -->
         <button id="shop-btn">Go to Shop</button>
     </section>
 
     <section id="shop" style="display:none;">
         <h2>🛒 Shop</h2>
-        <div id="shop-items">
-            <!-- Shop items will be added here -->
-        </div>
+        <div id="shop-items"></div>
         <button id="close-shop-btn">Close Shop</button>
+    </section>
+
+    <section id="locations">
+        <h2>🌍 Travel to a Location</h2>
+        <div id="location-buttons"></div>
     </section>
 
     <section id="nft-collection">
