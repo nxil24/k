@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Hunt: Collect and Buy Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🔍 Treasure Hunt: Collect and Buy Edition</h1>
+        <p>Explore, discover treasures, and buy items with your earnings!</p>
+    </header>
+
+    <section id="game-area">
+        <!-- Explore Button to start the treasure hunt -->
+        <button id="explore-btn">Explore</button>
+        <p id="status">Status: Ready to explore!</p>
+        <div id="treasure-info"></div>
+        <div id="treasure-animation"></div>
+    </section>
+
+    <section id="currency">
+        <h2>Your Coins: <span id="coin-balance">0</span></h2>
+        <!-- Add a button to open the shop -->
+        <button id="shop-btn">Go to Shop</button>
+    </section>
+
+    <section id="shop" style="display:none;">
+        <h2>🛒 Shop</h2>
+        <div id="shop-items">
+            <!-- Shop items will be added here -->
+        </div>
+        <button id="close-shop-btn">Close Shop</button>
+    </section>
+
+    <section id="nft-collection">
+        <h2>Your Collected Treasures</h2>
+        <div id="nft-list"></div>
+    </section>
+
+    <footer>
+        <p>Powered by Fun and JavaScript!</p>
+    </footer>
+
+    <script src="game.js"></script>
+</body>
+</html>
