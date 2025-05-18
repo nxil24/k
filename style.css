@@ -1,158 +1,82 @@
 body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    background-color: #f1f1f1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #eef3f8;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-    background-color: #3b5998;
-    color: white;
-    padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
+  background-color: #3b5998;
+  color: white;
+  padding: 20px;
 }
 
 section {
-    margin: 20px 0;
-    width: 100%;
-    max-width: 1200px;
-    padding: 0 20px;
-    box-sizing: border-box;
+  margin: 20px auto;
+  max-width: 900px;
+  padding: 0 20px;
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-top: 10px;
-    transition: transform 0.2s ease;
-    width: 200px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 10px;
+  transition: transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #45a049;
-    transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-#game-area, #nft-collection, #shop, #locations {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#treasure-animation img {
+  width: 100px;
+  animation: pop 1s ease;
 }
 
-#treasure-info, #treasure-animation {
-    font-size: 18px;
-    margin-top: 20px;
-    font-weight: bold;
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
 }
 
 #nft-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
 }
 
 .nft-item {
-    margin: 10px;
-    padding: 15px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    width: 120px;
-    text-align: center;
-    transition: transform 0.2s ease;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  width: 120px;
+  border: 2px solid #ccc;
 }
 
-.nft-item:hover {
-    transform: scale(1.05);
-}
+.common { border-color: #999; }
+.rare { border-color: #3399ff; }
+.epic { border-color: #cc33ff; }
 
-.nft-item img {
-    width: 100px;
-    height: 100px;
-}
-
-#shop-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-    padding-bottom: 20px;
-}
-
-.shop-item {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.shop-item img {
-    width: 80px;
-    height: 80px;
+.shop-item img, .nft-item img {
+  width: 80px;
+  height: 80px;
 }
 
 #location-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
 }
 
 footer {
-    margin-top: 30px;
-    font-size: 12px;
-    color: #888;
+  margin-top: 40px;
+  color: #777;
 }
-
-@media (max-width: 768px) {
-    button {
-        width: 150px;
-    }
-
-    #nft-list {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .nft-item {
-        width: 90%;
-        max-width: 150px;
-    }
-
-    #shop-items {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-}
-
-@media (max-width: 480px) {
-    header {
-        font-size: 18px;
-    }
-
-    button {
-        width: 100%;
-        font-size: 16px;
-    }
-
-    #shop-items {
-        grid-template-columns: 1fr;
-    }
-}
-
