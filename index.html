@@ -1,56 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Treasure Hunt: Adventure Edition</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Treasure Hunt: Adventure Edition</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="background-overlay"></div>
-
   <header>
     <h1>🏝️ Treasure Hunt: Adventure Edition</h1>
-    <p>Explore, collect treasures, buy items, and survive thrilling quests!</p>
+    <p>Explore, complete quests, and collect treasures!</p>
   </header>
 
   <main>
-    <section id="game-area">
-      <button id="explore-btn">Explore</button>
+    <section id="main-menu" class="panel active">
+      <button id="explore-btn" class="big-btn">Explore</button>
       <p id="status">Status: Ready to explore!</p>
       <div id="treasure-info"></div>
       <div id="treasure-animation"></div>
-    </section>
 
-    <section id="currency">
       <h2>Your Coins: <span id="coin-balance">0</span></h2>
-      <button id="shop-btn">🛒 Go to Shop</button>
+
+      <button id="shop-btn" class="big-btn">Go to Shop</button>
+      <button id="locations-btn" class="big-btn">Travel to Location</button>
     </section>
 
-    <section id="shop" class="hidden">
-      <h2>🛍️ Shop</h2>
-      <div id="shop-shelf">
-        <!-- Shop items go here -->
-      </div>
-      <button id="close-shop-btn">Close Shop</button>
+    <section id="shop" class="panel">
+      <h2>🛒 Shop</h2>
+      <div id="shop-items"></div>
+      <button id="close-shop-btn" class="big-btn">Close Shop</button>
     </section>
 
-    <section id="locations">
+    <section id="locations" class="panel">
       <h2>🌍 Travel to a Location</h2>
       <div id="location-buttons"></div>
+      <button id="back-to-menu-btn" class="big-btn">Back to Main Menu</button>
     </section>
 
-    <section id="nft-collection">
+    <section id="quest-area" class="panel">
+      <h2 id="quest-title"></h2>
+      <div id="quest-content"></div>
+      <button id="finish-quest-btn" class="big-btn" style="display:none;">Finish Quest</button>
+      <button id="back-to-locations-btn" class="big-btn">Back to Locations</button>
+    </section>
+
+    <section id="nft-collection" class="panel">
       <h2>Your Collected Treasures</h2>
       <div id="nft-list"></div>
-    </section>
-
-    <!-- Quest panel for manual quests -->
-    <section id="quest-panel" class="hidden">
-      <h2 id="quest-title"></h2>
-      <p id="quest-description"></p>
-      <button id="complete-quest-btn">Complete Quest</button>
-      <button id="cancel-quest-btn">Cancel</button>
     </section>
   </main>
 
