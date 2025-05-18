@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Treasure Hunt: Adventure Edition</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Treasure Hunt: Adventure Edition</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="overlay"></div>
+  <div id="background-overlay"></div>
 
   <header>
     <h1>🏝️ Treasure Hunt: Adventure Edition</h1>
-    <p>Explore, collect treasures, buy items, and conquer thrilling quests!</p>
+    <p>Explore, collect treasures, buy items, and survive thrilling quests!</p>
   </header>
 
   <main>
@@ -22,17 +22,17 @@
       <div id="treasure-animation"></div>
     </section>
 
-    <section id="currency-shop">
-      <div id="currency">
-        <h2>Your Coins: <span id="coin-balance">0</span></h2>
-        <button id="shop-btn">Open Shop 🛒</button>
-      </div>
+    <section id="currency">
+      <h2>Your Coins: <span id="coin-balance">0</span></h2>
+      <button id="shop-btn">🛒 Go to Shop</button>
+    </section>
 
-      <section id="shop" class="hidden">
-        <h2>🛍️ Shop Shelf</h2>
-        <div id="shop-items"></div>
-        <button id="close-shop-btn">Close Shop</button>
-      </section>
+    <section id="shop" class="hidden">
+      <h2>🛍️ Shop</h2>
+      <div id="shop-shelf">
+        <!-- Shop items go here -->
+      </div>
+      <button id="close-shop-btn">Close Shop</button>
     </section>
 
     <section id="locations">
@@ -43,6 +43,14 @@
     <section id="nft-collection">
       <h2>Your Collected Treasures</h2>
       <div id="nft-list"></div>
+    </section>
+
+    <!-- Quest panel for manual quests -->
+    <section id="quest-panel" class="hidden">
+      <h2 id="quest-title"></h2>
+      <p id="quest-description"></p>
+      <button id="complete-quest-btn">Complete Quest</button>
+      <button id="cancel-quest-btn">Cancel</button>
     </section>
   </main>
 
