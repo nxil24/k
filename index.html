@@ -1,58 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Treasure Hunt: Adventure Edition</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Hunt: Adventure Edition</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>🏝️ Treasure Hunt: Adventure Edition</h1>
-    <p>Explore, level up, complete quests, and conquer magical locations!</p>
-  </header>
+    <header>
+        <h1>🏝️ Treasure Hunt: Adventure Edition</h1>
+        <p>Explore, collect treasures, complete quests, and survive thrilling locations!</p>
+    </header>
 
-  <section id="player-stats">
-    <p>Level: <span id="player-level">1</span> | XP: <span id="player-xp">0</span>/<span id="xp-to-level">100</span></p>
-  </section>
+    <section id="game-area">
+        <button id="explore-btn">Explore</button>
+        <p id="status">Status: Ready to explore!</p>
+        <div id="treasure-info"></div>
+        <div id="treasure-animation"></div>
+    </section>
 
-  <section id="game-area">
-    <button id="explore-btn">Explore</button>
-    <p id="status">Status: Ready to explore!</p>
-    <div id="treasure-info"></div>
-    <div id="treasure-animation"></div>
-  </section>
+    <section id="currency">
+        <h2>Your Coins: <span id="coin-balance">0</span></h2>
+        <button id="shop-btn">Go to Shop</button>
+    </section>
 
-  <section id="currency">
-    <h2>Your Coins: <span id="coin-balance">0</span></h2>
-    <button id="shop-btn">🛒 Shop</button>
-  </section>
+    <section id="shop" class="shop-shelf" style="display:none;">
+        <h2>🛒 Shop</h2>
+        <div id="shop-items"></div>
+        <button id="close-shop-btn">Close Shop</button>
+    </section>
 
-  <section id="quests">
-    <h2>📜 Daily Quests</h2>
-    <ul id="quest-list"></ul>
-  </section>
+    <section id="locations">
+        <h2>🌍 Travel to a Location</h2>
+        <div id="location-buttons"></div>
+    </section>
 
-  <section id="shop" style="display:none;">
-    <h2>Shop</h2>
-    <div id="shop-items"></div>
-    <button id="close-shop-btn">Close Shop</button>
-  </section>
+    <section id="location-quest" style="display:none;">
+        <h2 id="location-title"></h2>
+        <p id="location-description"></p>
+        <button id="complete-quest-btn">Complete Quest</button>
+        <button id="exit-location-btn">Exit Location</button>
+    </section>
 
-  <section id="locations">
-    <h2>🌍 Travel to a Location</h2>
-    <div id="location-buttons"></div>
-  </section>
+    <section id="nft-collection">
+        <h2>Your Collected Treasures</h2>
+        <div id="nft-list"></div>
+    </section>
 
-  <section id="nft-collection">
-    <h2>Your Collected Treasures</h2>
-    <div id="nft-list"></div>
-  </section>
+    <footer>
+        <p>Powered by Fun and JavaScript!</p>
+    </footer>
 
-  <footer>
-    <p>Powered by Fun and JavaScript!</p>
-  </footer>
-
-  <script src="game.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
