@@ -1,3 +1,5 @@
+// Game Data & Variables
+
 const treasures = [
   { name: "Gold Coin", image: "gold-coin.png", rarity: "common", value: 10 },
   { name: "Silver Sword", image: "silver-sword.png", rarity: "common", value: 20 },
@@ -9,204 +11,383 @@ const treasures = [
 const itemsForSale = [
   { name: "Mystic Map", image: "mystic-map.png", cost: 30 },
   { name: "Golden Key", image: "golden-key.png", cost: 50 },
-  { name: "Fire Charm", image: "fire-charm.png", cost: 40 }
+  { name: "Fire Charm", image: "fire-charm.png", cost: 60 }
 ];
 
 const locations = [
-  { name: "Mystic Forest", image: "forest.png", requiredItem: "Mystic Map" },
-  { name: "Ancient Castle", image: "castle.png", requiredItem: "Golden Key" },
-  { name: "Volcanic Crater", image: "volcano.png", requiredItem: "Fire Charm" }
+  { name: "Mystic Forest", image: "forest.png", requiredItem: "Mystic Map", reward: 40, miniGame: "maze" },
+  { name: "Ancient Castle", image: "castle.png", requiredItem: "Golden Key", reward: 80, miniGame: "trivia" },
+  { name: "Volcanic Crater", image: "volcano.png", requiredItem: "Fire Charm", reward: 100, miniGame: "memory" }
 ];
 
-// Quests with manual interaction
-const quests = {
-  "Mystic Forest": {
-    description: "Find the hidden rune by clicking the button below.",
-    reward: 40
-  },
-  "Ancient Castle": {
-    description: "Solve the castle riddle: What has keys but can't open locks?",
-    reward: 80,
-    riddleAnswer: "piano"
-  },
-  "Volcanic Crater": {
-    description: "Brace yourself and click 'Complete Quest' when ready to survive the eruption!",
-    reward: 100
-  }
-};
-
+// Persistent storage
 let collectedTreasures = JSON.parse(localStorage.getItem("collectedTreasures")) || [];
 let ownedItems = JSON.parse(localStorage.getItem("ownedItems")) || [];
 let coinBalance = parseInt(localStorage.getItem("coinBalance")) || 0;
 
-function updateUI() {
-  // Coins
-  document.getElementById("coin-balance").innerText = coinBalance;
+// DOM Elements
+const panels = {
+  mainMenu: document.getElementById('main-menu'),
+  shop: document.getElementById('shop'),
+  locations: document.getElementById('locations'),
+  questArea: document.getElementById('quest-area'),
+  nftCollection: document.getElementById('nft-collection'),
+};
 
-  // NFT list
-  const nftList = document.getElementById("nft-list");
+const coinBalanceSpan = document.getElementById('coin-balance');
+const treasureInfo = document.getElementById('treasure-info');
+const treasureAnimation = document.getElementById('treasure-animation');
+
+const shopItemsContainer = document.getElementById('shop-items');
+const locationButtonsContainer = document.getElementById('location-buttons');
+
+const questTitle = document.getElementById('quest-title');
+const questContent = document.getElementById('quest-content');
+const finishQuestBtn = document.getElementById('finish-quest-btn');
+
+const nftList = document.getElementById('nft-list');
+
+const body = document.body;
+
+// Utility Functions
+
+function saveGame() {
+  localStorage.setItem("collectedTreasures", JSON.stringify(collectedTreasures));
+  localStorage.setItem("ownedItems", JSON.stringify(ownedItems));
+  localStorage.setItem("coinBalance", coinBalance.toString());
+}
+
+function updateUI() {
+  coinBalanceSpan.innerText = coinBalance;
+
+  // Update NFT list
   nftList.innerHTML = '';
-  collectedTreasures.forEach(treasure => {
-    const nftItem = document.createElement("div");
-    nftItem.classList.add("nft-item");
-    nftItem.innerHTML = `
-      <img src="${treasure.image}" alt="${treasure.name}" />
-      <p>${treasure.name}</p>
-    `;
-    nftList.appendChild(nftItem);
+  collectedTreasures.forEach(t => {
+    const nftDiv = document.createElement('div');
+    nftDiv.className = 'nft-item';
+    nftDiv.innerHTML = `<img src="${t.image}" alt="${t.name}"><p>${t.name}</p>`;
+    nftList.appendChild(nftDiv);
   });
 
-  // Shop shelf
-  const shopShelf = document.getElementById("shop-shelf");
-  shopShelf.innerHTML = '';
+  // Update Shop items
+  shopItemsContainer.innerHTML = '';
   itemsForSale.forEach(item => {
-    const shopDiv = document.createElement("div");
-    shopDiv.classList.add("shop-item");
-
-    // Disable button if already owned
     const owned = ownedItems.includes(item.name);
+    const shopDiv = document.createElement('div');
+    shopDiv.className = 'shop-item';
     shopDiv.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" />
+      <img src="${item.image}" alt="${item.name}">
       <p>${item.name}</p>
       <p>Cost: ${item.cost} coins</p>
-      <button ${owned ? "disabled" : ""} onclick="selectItemToBuy('${item.name}')">${owned ? "Owned" : "Buy"}</button>
+      <button ${owned ? "disabled" : ""} onclick="buyItem('${item.name}')">
+        ${owned ? "Owned" : "Buy"}
+      </button>
     `;
-    shopShelf.appendChild(shopDiv);
+    shopItemsContainer.appendChild(shopDiv);
   });
 
-  // Locations buttons
-  const locationButtons = document.getElementById("location-buttons");
-  locationButtons.innerHTML = '';
-  locations.forEach(location => {
-    const locDiv = document.createElement("div");
+  // Update Locations buttons
+  locationButtonsContainer.innerHTML = '';
+  locations.forEach(loc => {
+    const hasReqItem = ownedItems.includes(loc.requiredItem);
+    const locDiv = document.createElement('div');
+    locDiv.className = 'location-item';
     locDiv.innerHTML = `
-      <img src="${location.image}" alt="${location.name}" />
-      <button onclick="visitLocation('${location.name}')">Visit ${location.name}</button>
+      <img src="${loc.image}" alt="${loc.name}">
+      <button ${hasReqItem ? "" : "disabled"} onclick="startQuest('${loc.name}')">
+        Visit ${loc.name}
+      </button>
+      <p>${hasReqItem ? "Ready to explore!" : `Need ${loc.requiredItem}`}</p>
     `;
-    locationButtons.appendChild(locDiv);
+    locationButtonsContainer.appendChild(locDiv);
   });
+
+  saveGame();
 }
+
+// Game Logic
+
+window.buyItem = function (itemName) {
+  const item = itemsForSale.find(i => i.name === itemName);
+  if (coinBalance >= item.cost) {
+    coinBalance -= item.cost;
+    ownedItems.push(item.name);
+    updateUI();
+    alert(`You bought a ${item.name}!`);
+  } else {
+    alert("Not enough coins!");
+  }
+};
 
 function explore() {
   const randomTreasure = treasures[Math.floor(Math.random() * treasures.length)];
   coinBalance += randomTreasure.value;
-
-  document.getElementById("treasure-info").innerText = `You found a ${randomTreasure.name} (+${randomTreasure.value} coins)!`;
+  treasureInfo.innerText = `You found a ${randomTreasure.name} worth ${randomTreasure.value} coins!`;
   showTreasureAnimation(randomTreasure);
-
   collectedTreasures.push(randomTreasure);
-  localStorage.setItem("collectedTreasures", JSON.stringify(collectedTreasures));
-
-  localStorage.setItem("coinBalance", coinBalance);
   updateUI();
 }
 
 function showTreasureAnimation(treasure) {
-  const animDiv = document.getElementById("treasure-animation");
-  animDiv.innerHTML = `<img src="${treasure.image}" alt="${treasure.name}" />`;
-
+  treasureAnimation.innerHTML = `<img src="${treasure.image}" alt="${treasure.name}">`;
+  treasureAnimation.style.display = 'block';
   setTimeout(() => {
-    animDiv.innerHTML = "";
-  }, 2500);
+    treasureAnimation.style.display = 'none';
+  }, 1500);
 }
 
-function toggleShop() {
-  const shop = document.getElementById("shop");
-  if (shop.classList.contains("hidden")) {
-    shop.classList.remove("hidden");
-  } else {
-    shop.classList.add("hidden");
+// Panel Navigation
+
+function showPanel(panelName) {
+  for (const key in panels) {
+    panels[key].classList.remove('active');
   }
+  panels[panelName].classList.add('active');
 }
 
-function selectItemToBuy(itemName) {
-  const item = itemsForSale.find(i => i.name === itemName);
-  if (!item) return;
+document.getElementById('explore-btn').addEventListener('click', explore);
+document.getElementById('shop-btn').addEventListener('click', () => {
+  showPanel('shop');
+});
+document.getElementById('close-shop-btn').addEventListener('click', () => {
+  showPanel('mainMenu');
+});
+document.getElementById('locations-btn').addEventListener('click', () => {
+  showPanel('locations');
+});
+document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+  showPanel('mainMenu');
+});
+document.getElementById('back-to-locations-btn').addEventListener('click', () => {
+  showPanel('locations');
+});
 
-  if (ownedItems.includes(itemName)) {
-    alert("You already own this item.");
-    return;
-  }
-  if (coinBalance < item.cost) {
-    alert("Not enough coins!");
-    return;
-  }
+// Quest & Mini-games Logic
 
-  if (confirm(`Buy ${itemName} for ${item.cost} coins?`)) {
-    coinBalance -= item.cost;
-    ownedItems.push(itemName);
-    localStorage.setItem("coinBalance", coinBalance);
-    localStorage.setItem("ownedItems", JSON.stringify(ownedItems));
-    updateUI();
-    alert(`You bought the ${itemName}!`);
-  }
-}
+function startQuest(locationName) {
+  const loc = locations.find(l => l.name === locationName);
+  if (!loc) return;
 
-// Quest system
-function visitLocation(locationName) {
-  const location = locations.find(l => l.name === locationName);
-  if (!ownedItems.includes(location.requiredItem)) {
-    alert(`You need a ${location.requiredItem} to visit ${location.name}.`);
+  if (!ownedItems.includes(loc.requiredItem)) {
+    alert(`You need the ${loc.requiredItem} to explore this location.`);
     return;
   }
 
-  const questPanel = document.getElementById("quest-panel");
-  const questTitle = document.getElementById("quest-title");
-  const questDescription = document.getElementById("quest-description");
-  const completeBtn = document.getElementById("complete-quest-btn");
+  // Change background to location background
+  body.style.backgroundImage = `url(${loc.image})`;
 
-  questTitle.innerText = `Quest: ${location.name}`;
-  questDescription.innerText = quests[locationName].description;
+  questTitle.innerText = `Quest: Explore the ${loc.name}`;
+  questContent.innerHTML = ''; // Clear previous
 
-  // Remove previous event listeners by cloning the button
-  const newCompleteBtn = completeBtn.cloneNode(true);
-  completeBtn.parentNode.replaceChild(newCompleteBtn, completeBtn);
+  // Start the mini game for this location
+  switch (loc.miniGame) {
+    case 'maze':
+      loadMazeGame();
+      break;
+    case 'memory':
+      loadMemoryGame();
+      break;
+    case 'trivia':
+      loadTriviaGame();
+      break;
+  }
 
-  questPanel.classList.remove("hidden");
+  finishQuestBtn.style.display = 'none'; // disable finish button until player wins
 
-  if (locationName === "Ancient Castle") {
-    newCompleteBtn.onclick = () => {
-      const answer = prompt("Enter your answer to the riddle:");
-      if (answer && answer.toLowerCase() === quests[locationName].riddleAnswer) {
-        completeQuest(locationName);
-      } else {
-        alert("Wrong answer. Try again!");
+  showPanel('questArea');
+}
+
+// ========== Maze Mini Game (Forest) ==========
+
+const mazeSize = 7;
+const mazeGrid = [
+  [1,1,1,1,1,1,1],
+  [1,0,0,0,1,0,1],
+  [1,0,1,0,1,0,1],
+  [1,0,1,0,0,0,1],
+  [1,0,1,1,1,0,1],
+  [1,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1]
+];
+
+let playerPos = { x: 1, y: 1 };
+
+function loadMazeGame() {
+  const mazeDiv = document.createElement('div');
+  mazeDiv.id = 'maze-game';
+
+  for(let y = 0; y < mazeSize; y++) {
+    for(let x = 0; x < mazeSize; x++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      if(mazeGrid[y][x] === 1) cell.classList.add('wall');
+      if(playerPos.x === x && playerPos.y === y) cell.classList.add('player');
+      if(x === mazeSize-2 && y === mazeSize-2) cell.classList.add('exit');
+      mazeDiv.appendChild(cell);
+    }
+  }
+
+  questContent.innerHTML = '';
+  questContent.appendChild(mazeDiv);
+
+  window.addEventListener('keydown', handleMazeMovement);
+}
+
+function handleMazeMovement(e) {
+  const key = e.key;
+  let newX = playerPos.x;
+  let newY = playerPos.y;
+
+  switch(key) {
+    case 'ArrowUp': newY--; break;
+    case 'ArrowDown': newY++; break;
+    case 'ArrowLeft': newX--; break;
+    case 'ArrowRight': newX++; break;
+    default: return;
+  }
+
+  if(mazeGrid[newY][newX] === 0) {
+    playerPos = {x: newX, y: newY};
+    loadMazeGame();
+
+    if(newX === mazeSize-2 && newY === mazeSize-2) {
+      window.removeEventListener('keydown', handleMazeMovement);
+      alert("You escaped the Mystic Forest Maze! You earned 40 coins.");
+      coinBalance += 40;
+      updateUI();
+      showPanel('locations');
+      body.style.backgroundImage = "url('background-main.jpg')";
+    }
+  }
+}
+
+// ========== Memory Match Mini Game (Volcano) ==========
+
+const memoryCards = ['🔥', '💎', '🔥', '💎', '🌋', '🌋'];
+
+let flippedCards = [];
+let matchedCount = 0;
+
+function loadMemoryGame() {
+  questContent.innerHTML = '';
+
+  const memoryDiv = document.createElement('div');
+  memoryDiv.id = 'memory-game';
+
+  // Shuffle cards
+  const shuffled = memoryCards.sort(() => 0.5 - Math.random());
+
+  shuffled.forEach((symbol, idx) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.symbol = symbol;
+    card.innerText = '';
+    card.addEventListener('click', () => flipCard(card));
+    memoryDiv.appendChild(card);
+  });
+
+  questContent.appendChild(memoryDiv);
+
+  flippedCards = [];
+  matchedCount = 0;
+}
+
+function flipCard(card) {
+  if (flippedCards.length >= 2 || card.classList.contains('flipped')) return;
+
+  card.classList.add('flipped');
+  card.innerText = card.dataset.symbol;
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
+      matchedCount += 2;
+      flippedCards = [];
+
+      if (matchedCount === memoryCards.length) {
+        alert("You matched all pairs! You earned 100 coins.");
+        coinBalance += 100;
+        updateUI();
+        showPanel('locations');
+        body.style.backgroundImage = "url('background-main.jpg')";
       }
-    };
-  } else {
-    newCompleteBtn.onclick = () => {
-      completeQuest(locationName);
-    };
+    } else {
+      setTimeout(() => {
+        flippedCards.forEach(c => {
+          c.classList.remove('flipped');
+          c.innerText = '';
+        });
+        flippedCards = [];
+      }, 1000);
+    }
   }
-
-  document.getElementById("cancel-quest-btn").onclick = () => {
-    questPanel.classList.add("hidden");
-  };
 }
 
-function completeQuest(locationName) {
-  const reward = quests[locationName].reward;
-  coinBalance += reward;
-  localStorage.setItem("coinBalance", coinBalance);
-  alert(`Congrats! You completed the quest at ${locationName} and earned ${reward} coins.`);
-  document.getElementById("quest-panel").classList.add("hidden");
-  updateUI();
+// ========== Trivia Mini Game (Castle) ==========
+
+const triviaQuestions = [
+  {
+    question: "What is the symbol of the Ancient Castle?",
+    options: ["A crown", "A sword", "A shield", "A dragon"],
+    answer: 2
+  },
+  {
+    question: "Which item opens the Castle door?",
+    options: ["Mystic Map", "Golden Key", "Fire Charm", "Magic Potion"],
+    answer: 1
+  },
+  {
+    question: "What creature guards the treasure?",
+    options: ["A dragon", "A goblin", "A ghost", "A knight"],
+    answer: 0
+  }
+];
+
+let currentTriviaIndex = 0;
+
+function loadTriviaGame() {
+  questContent.innerHTML = '';
+  currentTriviaIndex = 0;
+  loadTriviaQuestion();
 }
 
-// Initialize UI and event listeners
-window.onload = () => {
-  updateUI();
+function loadTriviaQuestion() {
+  questContent.innerHTML = '';
 
-  document.getElementById("explore-btn").onclick = () => {
-    explore();
-    document.getElementById("status").innerText = "Status: Exploring...";
-  };
+  const q = triviaQuestions[currentTriviaIndex];
 
-  document.getElementById("shop-btn").onclick = () => {
-    toggleShop();
-  };
+  const questionP = document.createElement('p');
+  questionP.innerText = q.question;
+  questContent.appendChild(questionP);
 
-  document.getElementById("close-shop-btn").onclick = () => {
-    toggleShop();
-  };
-};
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'trivia-option';
+    btn.innerText = opt;
+    btn.onclick = () => checkTriviaAnswer(idx);
+    questContent.appendChild(btn);
+  });
+}
+
+function checkTriviaAnswer(selected) {
+  const correct = triviaQuestions[currentTriviaIndex].answer;
+  if (selected === correct) {
+    alert("Correct!");
+    currentTriviaIndex++;
+    if (currentTriviaIndex >= triviaQuestions.length) {
+      alert("You completed the trivia! You earned 80 coins.");
+      coinBalance += 80;
+      updateUI();
+      showPanel('locations');
+      body.style.backgroundImage = "url('background-main.jpg')";
+    } else {
+      loadTriviaQuestion();
+    }
+  } else {
+    alert("Wrong answer, try again.");
+  }
+}
+
+// Initialize UI
+updateUI();
+showPanel('mainMenu');
